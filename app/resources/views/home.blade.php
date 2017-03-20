@@ -9,9 +9,11 @@
 
                 <div class="panel-body">
                     @if($codigo)
-                        Tienes códigos
+                        Tu código es <strong>{{ $codigo->code }}</strong><br><br>
+                        <a href="/generar" class="btn btn-primary">Re-generar</a>
                     @else
-                        No tienes códigos
+                        No tienes códigos<br><br>
+                        <a href="/generar" class="btn btn-primary">Generar</a>
                     @endif
                 </div>
             </div>

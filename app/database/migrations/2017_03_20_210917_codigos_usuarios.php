@@ -15,8 +15,9 @@ class CodigosUsuarios extends Migration
     {
         Schema::create('codigos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('code')->index();
+            $table->string('code')->index()->unique();
             $table->integer('user_id')->unsigned();
+            $table->timestamps();
         });
     }
 
