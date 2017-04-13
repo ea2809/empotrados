@@ -2,39 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Codigo;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class HomeController extends Controller
+class CodigosController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function check($id, $code)
     {
-        $this->middleware('auth');
-    }
+        // Por ahora sin id
+        $codes = Codigo::where('code', $code)->get();
+        if($codes->isEmpty()) {
+            // TODO: no existe
+            return "0";
+        } else if ($codes->count() == 1) {
+            $codigo = $codes->first();
+            $this->generador($codigo->user);
+            return "1";
+        } else {
+            // TODO: Algo ha pasado, hay más de uno;
+            return "2";
+        }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $data = [];
-        $data['codigo'] = Auth::user()->codigo;
-        return view('home', $data);
-    }
-
-    public function generar()
-    {
-        $this->generador(Auth::user());
-        return redirect('/home');
     }
 
     private function generador($user)
@@ -75,6 +62,4 @@ class HomeController extends Controller
 
         return "" . $rand;
     }
-
-
 }

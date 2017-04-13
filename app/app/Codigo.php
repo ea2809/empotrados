@@ -26,6 +26,6 @@ class Codigo extends model
 
     public function user()
     {
-        return $this->belongsTo('App\Codigo');
+        return $this->belongsTo('App\User');
     }
 }

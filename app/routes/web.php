@@ -20,3 +20,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 Route::get('/generar', 'HomeController@generar');
 
+Route::get('/check/{id}/{code}', 'HomeController@check');
+
