@@ -46,7 +46,7 @@ byte colPins2[COLS2] = {4, 5, 6, 7}; //connect to the column pinouts of the keyp
 
 Keypad keypad = Keypad( makeKeymap(keys2), rowPins2, colPins2, ROWS2, COLS2 );
 
-int estado = 4;
+int estado = 0;
 String leido = "";
 
 void setup() {
@@ -90,6 +90,11 @@ void loop() { // Add an event listener.
 }
 
 void leer() {
+  delay(2000);
+  leido = "1234";
+  estado = 1;
+  return;
+  
   leido = "";
   while (true) {
     char tecla = keypad.getKey();

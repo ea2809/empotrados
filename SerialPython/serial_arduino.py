@@ -1,12 +1,16 @@
+import urllib2
 import serial
 
-ser = serial.Serial('/dev/cu.usbmodem1421', 9600)
-s = [0]
+SER = serial.Serial('/dev/cu.usbmodem1411', 9600)
+
+API = "14342345243243545"
+
 while True:
-    readSerial = ser.readline()+"";
-    print readSerial
+    READSERIAL = SER.readline()+""
+    print READSERIAL
     # Si es uno es verdad, sino es mentira
-    if (readSerial[0:4] == "1234"):
-        ser.writelines("1")
-    else:
-        ser.writelines("0")
+    PETICION = urllib2.urlopen("http://127.0.0.1:8080/check/"+API+"/"+READSERIAL)
+    LEIDO = PETICION.read()
+    print LEIDO
+    PETICION.close()
+    SER.writelines(LEIDO);
