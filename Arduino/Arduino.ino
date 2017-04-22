@@ -1,8 +1,6 @@
 #include <Keypad.h>
 #include <Servo.h>
-#include <LCD.h>
 #include <Wire.h>
-#include <LiquidCrystal.h>
 #include <LiquidCrystal_I2C.h>
 
 Servo servo;
@@ -17,16 +15,9 @@ byte R1 = 3;
 int pinPeso = 13;
 unsigned long anterior = 0;
 
-//Pantalla cristal
-byte dir = 0x27;
 #define I2C_ADDR    0x27
-#define  LED_OFF  0
-#define  LED_ON  1
-//mjkdz i2c LCD board
-//                    addr, en,rw,rs,d4,d5,d6,d7,bl,blpol
-//LiquidCrystal_I2C lcd(I2C_ADDR, 4, 5, 6, 0, 1, 2, 3, 7, NEGATIVE);
-LiquidCrystal_I2C lcd(I2C_ADDR, 6, 5, 4, 11, 12, 13, 14, 7,POSITIVE);
-// LiquidCrystal_I2C lcd( dir, 2, 1, 0, 4, 5, 6, 7);
+  
+LiquidCrystal_I2C lcd(I2C_ADDR,16,2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
 
 
 const byte ROWS2 = 4; //four rows
@@ -53,16 +44,13 @@ void setup() {
   Serial.begin(9600);
   keypad.setHoldTime(250);               // Default is 1000mS
   servo.attach(10);
-  servo.write(0);
 
-  lcd.begin(16,2);
-  lcd.clear();
-  lcd.setBacklight(true);
+  lcd.init();                      // initialize the lcd 
+  lcd.backlight();
   // Print a message to the LCD.
-  lcd.print("hello, world!");
 }
 
-void loop() { // Add an event listener.
+void loop() {
 
   switch (estado) {
     case 0:
@@ -77,28 +65,21 @@ void loop() { // Add an event listener.
     case 3:
       comprobarPeso();
       break;
-    case 4: 
-      // escanerPadre();
-      break;
   }
-  /*
-    servo.write(90);
-    delay(1000);
-    servo.write(0);
-    delay(1000);
-  */
 }
 
 void leer() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Codigo: ");
+  lcd.setCursor(0, 1);
+  servo.write(180);
   delay(2000);
-  leido = "1234";
-  estado = 1;
-  return;
-  
   leido = "";
   while (true) {
     char tecla = keypad.getKey();
     if ( tecla ) {
+      lcd.print('*');
       leido += tecla;
       if ( leido.length() == 4) {
         break;
@@ -108,100 +89,60 @@ void leer() {
   estado = 1;
 }
 
-void comprobar() {
+void comprobar() {  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Comprobando...");
   Serial.println(leido);
   while (Serial.available() == 0) {}
-  if ( Serial.readString() == "1")
+  if ( Serial.readString() == "1"){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Perfecto");
+    delay(1000);
     estado = 2;
-  else
+  }else{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Error");
+    delay(1000);
     estado = 0;
+  }
 }
 
 void moverServo() {
-  servo.write(90);
-  delay(250);
-  servo.write(0);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Sacando chicle...");
+  servo.write(45);
+  delay(2000);
   estado = 0;
 }
 
 void comprobarPeso() {
   unsigned long actual;
-  Serial.println("**********************");
   anterior = millis();
   while (true) {
     actual = millis();
     int val;
     val = digitalRead(pinPeso);
     if (val) {
-      Serial.println("Chicle va");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Gracias =)");
+      lcd.setCursor(0, 1);
+      lcd.print("Hasta pronto");
       // estado = 0
       break;
     }
     if (actual - anterior > 3000) {
-      Serial.println("Chicle no ha caido, voy a tirarlo de nuevo");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Algo ha fallado");
       // estado = 2
       break;
     }
 
   }
-}
-
-void pruebas_imprimir(){
-  // set the cursor to column 0, line 1
-  // (note: line 1 is the second row, since counting begins with 0):
-  lcd.setCursor(0, 1);
-  // print the number of seconds since reset:
-  lcd.print(millis()/1000); 
-  }
-
-
-void escanerPadre()
-{
-  Wire.begin();
-  Serial.println("\nI2C Scanner");
-  escanerI2C();
-}
-
-
-void escanerI2C()
-{
-  byte error, address;
-  int nDevices;
-
-  Serial.println("Scanning...");
-
-  nDevices = 0;
-  for(address = 0; address <= 130; address++ )
-  {
-    // The i2c_scanner uses the return value of
-    // the Write.endTransmisstion to see if
-    // a device did acknowledge to the address.
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
-
-    if (error == 0)
-    {
-      Serial.print("I2C device found at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println(" !");
-
-      nDevices++;
-    }
-    else if (error==4)
-    {
-      Serial.print("Unknow error at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.println(address,HEX);
-    }    
-  }
-  if (nDevices == 0)
-    Serial.println("No I2C devices found\n");
-  else
-    Serial.println("done\n");
-
-  delay(8000);           // wait 8 seconds for next scan
 }
 
