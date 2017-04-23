@@ -22,11 +22,20 @@ LiquidCrystal_I2C lcd(I2C_ADDR,16,2);  // set the LCD address to 0x20 for a 16 c
 
 const byte ROWS2 = 4; //four rows
 const byte COLS2 = 4; //four columns
+
+//char keys2[ROWS2][COLS2] = {
+//  {'1', '2', '3', '0'},
+//  {'4', '5', '6', '0'},
+//  {'7', '8', '9', '0'},
+//  {'0', '0', '0', '0'}
+//};
+
+
 char keys2[ROWS2][COLS2] = {
-  {'1', '2', '3', '0'},
-  {'4', '5', '6', '0'},
-  {'7', '8', '9', '0'},
-  {'0', '0', '0', '0'}
+  {'0', '0', '0', '0'},
+  {'3', '6', '9', '0'},
+  {'2', '5', '8', '0'},
+  {'1', '4', '7', '0'}
 };
 
 //byte rowPins2[ROWS2] = {R1, R2, R3, R4}; //connect to the row pinouts of the keypad
