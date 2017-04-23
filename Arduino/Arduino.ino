@@ -12,24 +12,16 @@ byte R4 = 8;
 byte R3 = 9;
 byte R2 = 2;
 byte R1 = 3;
-int pinPeso = 13;
+int pinServo = 10;
+
 unsigned long anterior = 0;
 
-#define I2C_ADDR    0x27
+#define I2C_ADDR 0x27
   
 LiquidCrystal_I2C lcd(I2C_ADDR,16,2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
 
-
 const byte ROWS2 = 4; //four rows
 const byte COLS2 = 4; //four columns
-
-//char keys2[ROWS2][COLS2] = {
-//  {'1', '2', '3', '0'},
-//  {'4', '5', '6', '0'},
-//  {'7', '8', '9', '0'},
-//  {'0', '0', '0', '0'}
-//};
-
 
 char keys2[ROWS2][COLS2] = {
   {'0', '0', '0', '0'},
@@ -38,11 +30,8 @@ char keys2[ROWS2][COLS2] = {
   {'1', '4', '7', '0'}
 };
 
-//byte rowPins2[ROWS2] = {R1, R2, R3, R4}; //connect to the row pinouts of the keypad
-//byte colPins2[COLS2] = {C1, C2, C3, C4}; //connect to the column pinouts of the keypad
-
-byte rowPins2[ROWS2] = {3, 2, 9, 8}; //connect to the row pinouts of the keypad
-byte colPins2[COLS2] = {4, 5, 6, 7}; //connect to the column pinouts of the keypad
+byte rowPins2[ROWS2] = {3, 2, 9, 8};
+byte colPins2[COLS2] = {4, 5, 6, 7};
 
 Keypad keypad = Keypad( makeKeymap(keys2), rowPins2, colPins2, ROWS2, COLS2 );
 
@@ -51,16 +40,13 @@ String leido = "";
 
 void setup() {
   Serial.begin(9600);
-  keypad.setHoldTime(250);               // Default is 1000mS
-  servo.attach(10);
-
-  lcd.init();                      // initialize the lcd 
+  keypad.setHoldTime(250);
+  servo.attach(pinServo);
+  lcd.init();
   lcd.backlight();
-  // Print a message to the LCD.
 }
 
 void loop() {
-
   switch (estado) {
     case 0:
       leer();
@@ -70,9 +56,6 @@ void loop() {
       break;
     case 2:
       moverServo();
-      break;
-    case 3:
-      comprobarPeso();
       break;
   }
 }
@@ -127,31 +110,3 @@ void moverServo() {
   delay(2000);
   estado = 0;
 }
-
-void comprobarPeso() {
-  unsigned long actual;
-  anterior = millis();
-  while (true) {
-    actual = millis();
-    int val;
-    val = digitalRead(pinPeso);
-    if (val) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Gracias =)");
-      lcd.setCursor(0, 1);
-      lcd.print("Hasta pronto");
-      // estado = 0
-      break;
-    }
-    if (actual - anterior > 3000) {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print("Algo ha fallado");
-      // estado = 2
-      break;
-    }
-
-  }
-}
-

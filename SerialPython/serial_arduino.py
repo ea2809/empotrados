@@ -14,3 +14,10 @@ while True:
     print LEIDO
     PETICION.close()
     SER.writelines(LEIDO);
+
+
+
+
+
+
+    
